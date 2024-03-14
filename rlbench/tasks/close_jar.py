@@ -24,7 +24,7 @@ class CloseJar(Task):
         for obj in self.jars:
             b.sample(obj, min_distance=0.01)
         success = ProximitySensor('success')
-        success.set_position([0.0, 0.0, 0.05], relative_to=self.jars[index % 2],
+        success.set_position([0.0, 0.0, 0.035], relative_to=self.jars[index % 2],
                              reset_dynamics=False)
         w3 = Dummy('waypoint3')
         w3.set_orientation([-np.pi, 0, -np.pi], reset_dynamics=False)
@@ -39,8 +39,8 @@ class CloseJar(Task):
         self.jars[index % 2].set_color(target_color_rgb)
         other_index = {0: 1, 1: 0}
         self.jars[other_index[index % 2]].set_color(distractor_color_rgb)
-        self.conditions += [DetectedCondition(self.lid, success)]
-        self.register_success_conditions(self.conditions)
+        # self.conditions += [DetectedCondition(self.lid, success)]
+        self.register_success_conditions([DetectedCondition(self.lid, success)])
         return ['close the %s jar' % target_color_name,
                 'screw on the %s jar lid' % target_color_name,
                 'grasping the lid, lift it from the table and use it to seal '

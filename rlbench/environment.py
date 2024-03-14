@@ -109,8 +109,15 @@ class Environment(object):
             arm.set_position(panda_pos)
         else:
             arm, gripper = arm_class(), gripper_class()
+            panda_pos = arm.get_position()
 
         self._robot = Robot(arm, gripper)
+
+        # print(arm.get_pose())
+        # print()
+        # a = arm.get_pose()
+        # print(a)
+
         if self._randomize_every is None:
             self._scene = Scene(
                 self._pyrep, self._robot, self._obs_config, self._robot_setup)

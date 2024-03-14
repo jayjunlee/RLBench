@@ -85,6 +85,18 @@ class TaskEnvironment(object):
         # Returns a list of descriptions and the first observation
         return desc, self._scene.get_observation()
 
+    def get_privileged_info(self):
+        print("===================================")
+        print("Initial objects in the scene:")
+        for obj in self._scene.task._initial_objs_in_scene:
+            print(obj[0].get_name())
+            print(obj[0].get_pose())
+        print("Pre-defined task waypoints:")
+        for wypt in self._scene.task.get_waypoints():
+            print(wypt._waypoint.get_pose())
+        print("===================================")
+        return
+
     def get_task_descriptions(self) -> List[str]:
         return self._scene.task.init_episode(self._variation_number)
 
@@ -120,6 +132,7 @@ class TaskEnvironment(object):
             if self._dataset_root is None or len(self._dataset_root) == 0:
                 raise RuntimeError(
                     "Can't ask for stored demo when no dataset root provided.")
+            # print(f"variation number: {self._variation_number}")
             demos = utils.get_stored_demos(
                 amount, image_paths, self._dataset_root, self._variation_number,
                 self._task.get_name(), self._obs_config,
