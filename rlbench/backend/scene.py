@@ -190,6 +190,10 @@ class Scene(object):
         oc_ob = self._obs_config.overhead_camera
         wc_ob = self._obs_config.wrist_camera
         fc_ob = self._obs_config.front_camera
+        lsc_ob.depth = True
+        rsc_ob.depth = True
+        fc_ob.depth = True
+        wc_ob.depth = True
 
         lsc_mask_fn, rsc_mask_fn, oc_mask_fn, wc_mask_fn, fc_mask_fn = [
             (rgb_handles_to_mask if c.masks_as_one_channel else lambda x: x
