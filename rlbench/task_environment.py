@@ -85,17 +85,22 @@ class TaskEnvironment(object):
         # Returns a list of descriptions and the first observation
         return desc, self._scene.get_observation()
 
-    def get_privileged_info(self):
-        print("===================================")
-        print("Initial objects in the scene:")
-        for obj in self._scene.task._initial_objs_in_scene:
-            print(obj[0].get_name())
-            print(obj[0].get_pose())
-        print("Pre-defined task waypoints:")
-        for wypt in self._scene.task.get_waypoints():
-            print(wypt._waypoint.get_pose())
-        print("===================================")
-        return
+    # def get_privileged_info(self):
+    #     print("===================================")
+    #     print("Initial objects in the scene:")
+    #     for obj in self._scene.task._initial_objs_in_scene:
+    #         print(obj[0].get_name())
+    #         print(obj[0].get_type())
+    #         print(obj[0].get_color())
+    #         print(dir(obj[0].get_type()))
+    #         # print(obj[0].get_object_name(obj[0].get_name()))
+    #         # print(obj[0].get_object_type(obj[0].get_object_name(obj[0].get_name())))
+    #         print(obj[0].get_pose())
+    #     print("Pre-defined task waypoints:")
+    #     for wypt in self._scene.task.get_waypoints():
+    #         print(wypt._waypoint.get_pose())
+    #     print("===================================")
+    #     return
 
     def get_task_descriptions(self) -> List[str]:
         return self._scene.task.init_episode(self._variation_number)
