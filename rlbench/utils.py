@@ -637,7 +637,7 @@ def get_stored_demos_v2(amount: int, image_paths: bool, dataset_root: str,
 
 
         if not image_paths:
-            with ThreadPoolExecutor(max_workers=12) as executor:
+            with ThreadPoolExecutor(max_workers=10) as executor:
                 # Submit all tasks for parallel execution
                 for step in range(num_steps):
                     executor.submit(read_image, obs, obs_config, step)

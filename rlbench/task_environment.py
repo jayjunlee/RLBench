@@ -138,10 +138,13 @@ class TaskEnvironment(object):
                 raise RuntimeError(
                     "Can't ask for stored demo when no dataset root provided.")
             # print(f"variation number: {self._variation_number}")
-            demos = utils.get_stored_demos(
+            import time
+            tstart = time.time()
+            demos = utils.get_stored_demos_v2(
                 amount, image_paths, self._dataset_root, self._variation_number,
                 self._task.get_name(), self._obs_config,
                 random_selection, from_episode_number)
+            print(f"Time taken to load {amount} demos: {time.time()-tstart}")
         else:
             ctr_loop = self._robot.arm.joints[0].is_control_loop_enabled()
             self._robot.arm.set_control_loop_enabled(True)
