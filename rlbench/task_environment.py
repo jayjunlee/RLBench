@@ -144,7 +144,7 @@ class TaskEnvironment(object):
                 amount, image_paths, self._dataset_root, self._variation_number,
                 self._task.get_name(), self._obs_config,
                 random_selection, from_episode_number)
-            print(f"Time taken to load {amount} demos: {time.time()-tstart}")
+            # print(f"Time taken to load {amount} demos: {time.time()-tstart}")
         else:
             ctr_loop = self._robot.arm.joints[0].is_control_loop_enabled()
             self._robot.arm.set_control_loop_enabled(True)
