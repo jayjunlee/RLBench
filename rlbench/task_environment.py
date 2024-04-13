@@ -1,6 +1,8 @@
 import logging
 from typing import List, Callable
 
+from math import sqrt
+
 import numpy as np
 from pyrep import PyRep
 from pyrep.const import ObjectType
@@ -18,7 +20,6 @@ from rlbench.observation_config import ObservationConfig
 _DT = 0.05
 _MAX_RESET_ATTEMPTS = 40
 _MAX_DEMO_ATTEMPTS = 10
-
 
 class TaskEnvironment(object):
 
@@ -84,23 +85,6 @@ class TaskEnvironment(object):
         self._reset_called = True
         # Returns a list of descriptions and the first observation
         return desc, self._scene.get_observation()
-
-    # def get_privileged_info(self):
-    #     print("===================================")
-    #     print("Initial objects in the scene:")
-    #     for obj in self._scene.task._initial_objs_in_scene:
-    #         print(obj[0].get_name())
-    #         print(obj[0].get_type())
-    #         print(obj[0].get_color())
-    #         print(dir(obj[0].get_type()))
-    #         # print(obj[0].get_object_name(obj[0].get_name()))
-    #         # print(obj[0].get_object_type(obj[0].get_object_name(obj[0].get_name())))
-    #         print(obj[0].get_pose())
-    #     print("Pre-defined task waypoints:")
-    #     for wypt in self._scene.task.get_waypoints():
-    #         print(wypt._waypoint.get_pose())
-    #     print("===================================")
-    #     return
 
     def get_task_descriptions(self) -> List[str]:
         return self._scene.task.init_episode(self._variation_number)
@@ -180,3 +164,51 @@ class TaskEnvironment(object):
     def reset_to_demo(self, demo: Demo) -> (List[str], Observation):
         demo.restore_state()
         return self.reset()
+
+    def get_privileged_info(self):
+
+        def rgb_to_color_name(rgb):
+            # Dictionary of some basic colors
+            colors = {
+                'black': (255, 255, 255), 'white': (0, 0, 0), 'red': (255, 0, 0),
+                'lime': (0, 255, 0), 'blue': (0, 0, 255), 'yellow': (255, 255, 0),
+                'cyan': (0, 255, 255), 'magenta': (255, 0, 255), 'silver': (192, 192, 192),
+                'gray': (128, 128, 128), 'maroon': (128, 0, 0), 'olive': (128, 128, 0),
+                'green': (0, 128, 0), 'purple': (128, 0, 128), 'teal': (0, 128, 128),
+                'navy': (0, 0, 128), 'brown': (165, 42, 42), 'orange': (255, 165, 0),
+                'gold': (255, 215, 0), 'beige': (245, 245, 220), 'tan': (210, 180, 140),
+                'light blue': (173, 216, 230), 'aqua': (0, 255, 255), 'light green': (144, 238, 144),
+                'dark green': (0, 100, 0), 'pink': (255, 192, 203), 'light pink': (255, 182, 193),
+                'dark red': (139, 0, 0), 'light yellow': (255, 255, 224),
+                'violet': (238, 130, 238), 'light gray': (211, 211, 211), 'dark gray': (169, 169, 169),
+                'charcoal': (54, 69, 79)
+            }
+
+            # Convert 0-1 RGB to 0-255
+            r, g, b = (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
+            closest_color = min(colors, key=lambda color: color_distance(colors[color], (r, g, b)))
+            return closest_color    
+
+        def color_distance(c1, c2):
+            # Calculate Euclidean distance between two colors
+            return sqrt((c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2 + (c1[2] - c2[2]) ** 2)
+
+        info_str = "\n"
+        for obj in self._scene.task._initial_objs_in_scene:
+            if obj[0].get_type() in [ObjectType.DUMMY, ObjectType.PROXIMITY_SENSOR]:
+                continue
+            if 'boundary' in obj[0].get_name() or 'plane' in obj[0].get_name():
+                continue
+            if obj[0].get_type() in [ObjectType.JOINT]:
+                info_str += f"\t{obj[0].get_name()} \t| pose: {obj[0].get_pose()}\n"
+                # print(f"\t{obj[0].get_name()} \t| pose: {obj[0].get_pose()}")
+            else:
+                info_str += f"\t{rgb_to_color_name(obj[0].get_color())} {np.round(obj[0].get_color(),2)} {obj[0].get_name()} \t| pose: {obj[0].get_pose()}\n"
+                # print(f"\t{rgb_to_color_name(obj[0].get_color())} {obj[0].get_name()} \t| pose: {obj[0].get_pose()}")
+
+            # print(dir(obj[0]), obj[0].get_type(), obj[0].get_name())
+        # print("Pre-defined task waypoints:")
+        # for wypt in self._scene.task.get_waypoints():
+        #     print(wypt._waypoint.get_pose())
+        # print("===================================")
+        return info_str
