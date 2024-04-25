@@ -166,9 +166,7 @@ class TaskEnvironment(object):
         return self.reset()
 
     def get_privileged_info(self):
-
         def rgb_to_color_name(rgb):
-            # Dictionary of some basic colors
             colors = {
                 'black': (255, 255, 255), 'white': (0, 0, 0), 'red': (255, 0, 0),
                 'lime': (0, 255, 0), 'blue': (0, 0, 255), 'yellow': (255, 255, 0),
@@ -184,31 +182,31 @@ class TaskEnvironment(object):
                 'charcoal': (54, 69, 79)
             }
 
-            # Convert 0-1 RGB to 0-255
             r, g, b = (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
             closest_color = min(colors, key=lambda color: color_distance(colors[color], (r, g, b)))
-            return closest_color    
+            return closest_color
 
         def color_distance(c1, c2):
-            # Calculate Euclidean distance between two colors
             return sqrt((c1[0] - c2[0]) ** 2 + (c1[1] - c2[1]) ** 2 + (c1[2] - c2[2]) ** 2)
 
-        info_str = "\n"
+        info_dict = {}
         for obj in self._scene.task._initial_objs_in_scene:
             if obj[0].get_type() in [ObjectType.DUMMY, ObjectType.PROXIMITY_SENSOR]:
                 continue
             if 'boundary' in obj[0].get_name() or 'plane' in obj[0].get_name():
                 continue
-            if obj[0].get_type() in [ObjectType.JOINT]:
-                info_str += f"\t{obj[0].get_name()} \t| pose: {obj[0].get_pose()}\n"
-                # print(f"\t{obj[0].get_name()} \t| pose: {obj[0].get_pose()}")
+            object_info = {
+                "pose": obj[0].get_pose()
+            }
+            if obj[0].get_type() == ObjectType.JOINT:
+                object_info["type"] = "Joint"
             else:
-                info_str += f"\t{rgb_to_color_name(obj[0].get_color())} {np.round(obj[0].get_color(),2)} {obj[0].get_name()} \t| pose: {obj[0].get_pose()}\n"
-                # print(f"\t{rgb_to_color_name(obj[0].get_color())} {obj[0].get_name()} \t| pose: {obj[0].get_pose()}")
+                color_name = rgb_to_color_name(obj[0].get_color())
+                object_info.update({
+                    "color_name": color_name,
+                    "color_value": np.round(obj[0].get_color(), 2),
+                    "type": "Regular"
+                })
+            info_dict[obj[0].get_name()] = object_info
 
-            # print(dir(obj[0]), obj[0].get_type(), obj[0].get_name())
-        # print("Pre-defined task waypoints:")
-        # for wypt in self._scene.task.get_waypoints():
-        #     print(wypt._waypoint.get_pose())
-        # print("===================================")
-        return info_str
+        return info_dict
