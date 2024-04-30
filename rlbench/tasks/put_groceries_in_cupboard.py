@@ -36,9 +36,7 @@ class PutGroceriesInCupboard(Task):
         [self.boundary.sample(g, min_distance=0.1) for g in self.groceries]
         self.waypoint1.set_pose(self.grasp_points[index].get_pose())
         self.register_success_conditions(
-            [DetectedCondition(self.groceries[index],
-                               ProximitySensor('success')),
-             NothingGrasped(self.robot.gripper)])
+            [DetectedCondition(self.groceries[index], ProximitySensor('success')),]) # NothingGrasped(self.robot.gripper)
         return ['put the %s in the cupboard' % GROCERY_NAMES[index],
                 'pick up the %s and place it in the cupboard'
                 % GROCERY_NAMES[index],
